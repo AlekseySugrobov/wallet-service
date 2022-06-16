@@ -1,0 +1,72 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'org.openapi.generator' version '5.2.0'
+}
+
+group = 'com.leovegas'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+openApiGenerate {
+    generatorName = "spring"
+    library = "spring-mvc"
+    inputSpec = "$rootDir/src/main/resources/openapi-specification/wallet-service.yaml".toString()
+    outputDir = "$buildDir/generated/openapi".toString()
+    apiPackage = "${group}.api"
+    modelPackage = "${group}.model"
+    configOptions = [
+            interfaceOnly: "true",
+            useTags      : "true"
+    ]
+}
+
+compileJava.dependsOn("openApiGenerate")
+
+sourceSets {
+    main {
+        java {
+            srcDir("$buildDir/generated/openapi/src/main/java")
+        }
+    }
+}
+
+ext {
+    liquibaseVersion = "4.4.3"
+    mapStructVersion = "1.4.2.Final"
+    swaggerVersion = "2.9.2"
+    springDocVersion = "1.6.9"
+}
+
+dependencies {
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
+    implementation "org.mapstruct:mapstruct:${mapStructVersion}"
+    implementation("org.springdoc:springdoc-openapi-ui:${springDocVersion}")
+    implementation("org.springdoc:springdoc-openapi-webmvc-core:${springDocVersion}")
+    implementation "io.springfox:springfox-core:${swaggerVersion}"
+    implementation "io.springfox:springfox-swagger2:${swaggerVersion}"
+
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.h2database:h2'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
