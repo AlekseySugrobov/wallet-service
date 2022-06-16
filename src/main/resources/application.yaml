@@ -3,3 +3,6 @@ spring:
     name: wallet-service
   liquibase:
     change-log: classpath:db/changelog.xml
+  jpa:
+    hibernate:
+      ddl-auto: validate
