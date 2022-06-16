@@ -6,19 +6,15 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 /**
- * Describes filter for searching players.
+ * Describes filter for searching wallets.
  */
 @Data
 @NoArgsConstructor
-public class PlayerFilter {
+public class WalletFilter {
     /**
-     * First name must contain.
+     * User's identifier
      */
-    private String firstName;
-    /**
-     * Last name must contain.
-     */
-    private String lastName;
+    private Long userId;
     /**
      * Start balance.
      */

@@ -8,17 +8,17 @@ servers:
   - url: 'http://localhost:3000'
 
 paths:
-  /api/v1/player/{id}:
+  /api/v1/wallet/{id}:
     get:
-      summary: Returns player info
-      tags: [ "Player" ]
+      summary: Returns wallet info
+      tags: [ "Wallet" ]
       parameters:
         - in: path
           name: id
           schema:
             type: integer
           required: true
-          description: Player id
+          description: Wallet id
       responses:
         '200':
           description: OK
