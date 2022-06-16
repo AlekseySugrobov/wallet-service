@@ -8,19 +8,25 @@ import com.leovegas.walletservice.exceptions.PlayerNotFoundException;
 import com.leovegas.walletservice.repositories.PlayerRepository;
 import com.leovegas.walletservice.service.PlayerService;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import lombok.RequiredArgsConstructor;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class PlayerServiceImpl implements PlayerService {
 
+    private final JPAQueryFactory jpaQueryFactory;
     private final PlayerRepository playerRepository;
+
+    public PlayerServiceImpl(PlayerRepository playerRepository, EntityManager entityManager) {
+        this.playerRepository = playerRepository;
+        this.jpaQueryFactory = new JPAQueryFactory(entityManager);
+    }
 
     @Override
     public Player save(Player player) {
@@ -60,5 +66,16 @@ public class PlayerServiceImpl implements PlayerService {
             searchExpression = searchExpression.and(QPlayer.player.balance.loe(playerFilter.getToBalance()));
         }
         return Lists.newArrayList(this.playerRepository.findAll(searchExpression));
+    }
+
+    public BigDecimal getBalanceById(long id) {
+        if (!this.playerRepository.existsById(id)) {
+            throw new PlayerNotFoundException(id);
+        }
+        return this.jpaQueryFactory.query()
+                .select(QPlayer.player.balance)
+                .from(QPlayer.player)
+                .where(QPlayer.player.id.eq(id))
+                .fetchOne();
     }
 }

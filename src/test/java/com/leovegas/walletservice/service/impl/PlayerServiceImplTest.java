@@ -145,4 +145,26 @@ class PlayerServiceImplTest {
                 .isEmpty();
         filteredPlayersAssertions.assertAll();
     }
+
+    @Test
+    @DisplayName("Test getting balance for not existing player by id")
+    void gettingBalanceForNotExistingPlayerById_ShouldThrowException() {
+        long id = 1_000_000;
+        assertThatThrownBy(() -> this.playerService.getBalanceById(id))
+                .isInstanceOf(PlayerNotFoundException.class)
+                .hasMessage("Unable find player by id " + id);
+    }
+
+    @Test
+    @DisplayName("Test getting balance for existing player by id")
+    void gettingBalanceForNotExistingPlayerById_ShouldReturnBalance() {
+        BigDecimal expectedBalance = BigDecimal.valueOf(1234.56);
+        Player player = PlayerGenerationUtils.generatePlayer();
+        player.setBalance(expectedBalance);
+        this.playerService.save(player);
+
+        BigDecimal balance = this.playerService.getBalanceById(player.getId());
+
+        assertThat(balance).isEqualTo(expectedBalance);
+    }
 }
