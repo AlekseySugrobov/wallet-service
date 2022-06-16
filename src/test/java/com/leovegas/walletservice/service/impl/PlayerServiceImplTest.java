@@ -1,6 +1,7 @@
 package com.leovegas.walletservice.service.impl;
 
 import com.leovegas.walletservice.domain.entities.Player;
+import com.leovegas.walletservice.domain.models.PlayerFilter;
 import com.leovegas.walletservice.exceptions.PlayerNotFoundException;
 import com.leovegas.walletservice.repositories.PlayerRepository;
 import com.leovegas.walletservice.utils.PlayerGenerationUtils;
@@ -14,6 +15,8 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -121,5 +124,25 @@ class PlayerServiceImplTest {
         assertThatThrownBy(() -> this.playerService.delete(id))
                 .isInstanceOf(PlayerNotFoundException.class)
                 .hasMessage("Unable find player by id " + id);
+    }
+
+    @Test
+    @DisplayName("Test searching players by filter")
+    void searchPlayersByFilterTest() {
+        PlayerFilter playerFilter = new PlayerFilter();
+        playerFilter.setFirstName("o");
+        playerFilter.setFromBalance(BigDecimal.valueOf(0.0));
+        playerFilter.setToBalance(BigDecimal.valueOf(100.0));
+
+        List<Player> players = this.playerService.search(playerFilter);
+
+        SoftAssertions filteredPlayersAssertions = new SoftAssertions();
+        filteredPlayersAssertions.assertThat(players).extracting(Player::getBalance)
+                .filteredOn(balance -> balance.compareTo(BigDecimal.valueOf(0.0)) == -1 && balance.compareTo(BigDecimal.valueOf(100.0)) == 1)
+                .isEmpty();
+        filteredPlayersAssertions.assertThat(players).extracting(Player::getFirstName)
+                .filteredOn(firstName -> !firstName.toLowerCase(Locale.ROOT).contains("o"))
+                .isEmpty();
+        filteredPlayersAssertions.assertAll();
     }
 }

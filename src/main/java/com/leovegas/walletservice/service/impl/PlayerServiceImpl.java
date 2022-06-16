@@ -1,11 +1,15 @@
 package com.leovegas.walletservice.service.impl;
 
+import com.google.common.collect.Lists;
 import com.leovegas.walletservice.domain.entities.Player;
+import com.leovegas.walletservice.domain.entities.QPlayer;
 import com.leovegas.walletservice.domain.models.PlayerFilter;
 import com.leovegas.walletservice.exceptions.PlayerNotFoundException;
 import com.leovegas.walletservice.repositories.PlayerRepository;
 import com.leovegas.walletservice.service.PlayerService;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +46,19 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public List<Player> search(PlayerFilter playerFilter) {
-        return null;
+        BooleanExpression searchExpression = QPlayer.player.isNotNull();
+        if (StringUtils.isNotBlank(playerFilter.getFirstName())) {
+            searchExpression = searchExpression.and(QPlayer.player.firstName.containsIgnoreCase(playerFilter.getFirstName()));
+        }
+        if (StringUtils.isNotBlank(playerFilter.getLastName())) {
+            searchExpression = searchExpression.and(QPlayer.player.lastName.containsIgnoreCase(playerFilter.getLastName()));
+        }
+        if (Objects.nonNull(playerFilter.getFromBalance())) {
+            searchExpression = searchExpression.and(QPlayer.player.balance.goe(playerFilter.getFromBalance()));
+        }
+        if (Objects.nonNull(playerFilter.getToBalance())) {
+            searchExpression = searchExpression.and(QPlayer.player.balance.loe(playerFilter.getToBalance()));
+        }
+        return Lists.newArrayList(this.playerRepository.findAll(searchExpression));
     }
 }
