@@ -1,9 +1,12 @@
 package com.leovegas.walletservice.service;
 
 import com.leovegas.model.WalletFilter;
+import com.leovegas.walletservice.domain.entities.TransactionType;
 import com.leovegas.walletservice.domain.entities.Wallet;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -50,4 +53,13 @@ public interface WalletService {
      * @return balance
      */
     BigDecimal getBalanceByUserId(long userId);
+
+    /**
+     * Updates wallet balance.
+     *
+     * @param wallet {@link Wallet}
+     * @param amount transaction's amount
+     * @param type   transaction type {@link TransactionType}
+     */
+    void proceedTransaction(@NotNull @Valid Wallet wallet, @NotNull BigDecimal amount, @NotNull TransactionType type);
 }

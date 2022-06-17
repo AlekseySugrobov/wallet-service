@@ -1,5 +1,6 @@
 package com.leovegas.walletservice.controllers.advice;
 
+import com.leovegas.walletservice.exceptions.TransactionIdAlreadyExists;
 import com.leovegas.walletservice.exceptions.WalletNotFoundException;
 import com.leovegas.walletservice.exceptions.WalletUniqueConstraintViolationException;
 import lombok.Getter;
@@ -26,6 +27,11 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(WalletUniqueConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleWalletUniqueConstraintViolationException(
             WalletUniqueConstraintViolationException exception, WebRequest request) {
+        return this.logAndReturnResult(HttpStatus.CONFLICT, exception, request);
+    }
+
+    @ExceptionHandler(TransactionIdAlreadyExists.class)
+    public ResponseEntity<ErrorResponse> handleTransactionIdAlreadyExists(TransactionIdAlreadyExists exception, WebRequest request) {
         return this.logAndReturnResult(HttpStatus.CONFLICT, exception, request);
     }
 

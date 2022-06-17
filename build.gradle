@@ -26,6 +26,10 @@ openApiGenerate {
     outputDir = "$buildDir/generated/openapi".toString()
     apiPackage = "${group}.api"
     modelPackage = "${group}.model"
+    importMappings = [
+            transactionType  : "com.leovegas.walletservice.domain.entities.TransactionType",
+            transactionStatus: "com.leovegas.walletservice.domain.entities.TransactionStatus"
+    ]
     configOptions = [
             interfaceOnly  : "true",
             useTags        : "true",
