@@ -1,9 +1,10 @@
 package com.leovegas.walletservice.service;
 
+import com.leovegas.model.WalletFilter;
 import com.leovegas.walletservice.domain.entities.Wallet;
-import com.leovegas.walletservice.domain.models.WalletFilter;
 import org.springframework.validation.annotation.Validated;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -41,4 +42,12 @@ public interface WalletService {
      * @return collection of {@link Wallet}
      */
     List<Wallet> search(WalletFilter walletFilter);
+
+    /**
+     * Returns balance for user id.
+     *
+     * @param userId user's identifier
+     * @return balance
+     */
+    BigDecimal getBalanceByUserId(long userId);
 }

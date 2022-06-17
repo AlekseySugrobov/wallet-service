@@ -27,8 +27,9 @@ openApiGenerate {
     apiPackage = "${group}.api"
     modelPackage = "${group}.model"
     configOptions = [
-            interfaceOnly: "true",
-            useTags      : "true"
+            interfaceOnly  : "true",
+            useTags        : "true",
+            openApiNullable: "false"
     ]
 }
 
@@ -71,6 +72,7 @@ dependencies {
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation "uk.co.jemos.podam:podam:${podamVersion}"
     testImplementation "org.assertj:assertj-core:${assertJVersion}"

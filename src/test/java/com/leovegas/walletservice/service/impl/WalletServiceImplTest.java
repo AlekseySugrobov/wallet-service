@@ -1,7 +1,7 @@
 package com.leovegas.walletservice.service.impl;
 
+import com.leovegas.model.WalletFilter;
 import com.leovegas.walletservice.domain.entities.Wallet;
-import com.leovegas.walletservice.domain.models.WalletFilter;
 import com.leovegas.walletservice.exceptions.WalletNotFoundException;
 import com.leovegas.walletservice.exceptions.WalletUniqueConstraintViolationException;
 import com.leovegas.walletservice.repositories.WalletRepository;
@@ -99,8 +99,8 @@ class WalletServiceImplTest {
     @DisplayName("Test searching wallets by filter")
     void searchWalletsByFilterTest() {
         WalletFilter walletFilter = new WalletFilter();
-        walletFilter.setFromBalance(BigDecimal.valueOf(0.0));
-        walletFilter.setToBalance(BigDecimal.valueOf(100.0));
+        walletFilter.setMinBalance(BigDecimal.valueOf(0.0));
+        walletFilter.setMaxBalance(BigDecimal.valueOf(100.0));
 
         List<Wallet> players = this.walletService.search(walletFilter);
 

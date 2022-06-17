@@ -1,9 +1,9 @@
 package com.leovegas.walletservice.service.impl;
 
 import com.google.common.collect.Lists;
+import com.leovegas.model.WalletFilter;
 import com.leovegas.walletservice.domain.entities.QWallet;
 import com.leovegas.walletservice.domain.entities.Wallet;
-import com.leovegas.walletservice.domain.models.WalletFilter;
 import com.leovegas.walletservice.exceptions.WalletNotFoundException;
 import com.leovegas.walletservice.exceptions.WalletUniqueConstraintViolationException;
 import com.leovegas.walletservice.repositories.WalletRepository;
@@ -11,6 +11,7 @@ import com.leovegas.walletservice.service.WalletService;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.math.BigDecimal;
@@ -29,6 +30,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
+    @Transactional
     public Wallet create(long userId) {
         if (this.walletRepository.existsByUserId(userId)) {
             throw new WalletUniqueConstraintViolationException(userId);
@@ -39,12 +41,14 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Wallet get(long userId) {
         return this.walletRepository.findByUserId(userId)
                 .orElseThrow(() -> new WalletNotFoundException(userId));
     }
 
     @Override
+    @Transactional
     public void delete(long userId) {
         if (!this.walletRepository.existsByUserId(userId)) {
             throw new WalletNotFoundException(userId);
@@ -53,20 +57,22 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Wallet> search(WalletFilter walletFilter) {
         BooleanExpression searchExpression = QWallet.wallet.isNotNull();
         if (Objects.nonNull(walletFilter.getUserId())) {
             searchExpression = searchExpression.and(QWallet.wallet.userId.eq(walletFilter.getUserId()));
         }
-        if (Objects.nonNull(walletFilter.getFromBalance())) {
-            searchExpression = searchExpression.and(QWallet.wallet.balance.goe(walletFilter.getFromBalance()));
+        if (Objects.nonNull(walletFilter.getMinBalance())) {
+            searchExpression = searchExpression.and(QWallet.wallet.balance.goe(walletFilter.getMinBalance()));
         }
-        if (Objects.nonNull(walletFilter.getToBalance())) {
-            searchExpression = searchExpression.and(QWallet.wallet.balance.loe(walletFilter.getToBalance()));
+        if (Objects.nonNull(walletFilter.getMaxBalance())) {
+            searchExpression = searchExpression.and(QWallet.wallet.balance.loe(walletFilter.getMaxBalance()));
         }
         return Lists.newArrayList(this.walletRepository.findAll(searchExpression));
     }
 
+    @Override
     public BigDecimal getBalanceByUserId(long userId) {
         if (!this.walletRepository.existsByUserId(userId)) {
             throw new WalletNotFoundException(userId);
