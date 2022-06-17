@@ -8,17 +8,155 @@ servers:
   - url: 'http://localhost:3000'
 
 paths:
-  /api/v1/player/{id}:
+  /api/v1/wallet/{userId}/balance:
     get:
-      summary: Returns player info
-      tags: [ "Player" ]
+      summary: Returns balance of current user
+      tags: [ "Wallet" ]
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: Player id
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Balance successfully got by user id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+        '400':
+          description: Wrong input parameters
+        '404':
+          description: Wallent doesn't exist
+        '500':
+          description: Internal server error
+  /api/v1/wallet/{userId}:
+    get:
+      summary: Returns wallet by user identifier
+      tags: [ "Wallet" ]
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Wallet successfully got by user id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletDTO'
+        '400':
+          description: Wrong input parameters
+        '404':
+          description: Wallent doesn't exist
+        '500':
+          description: Internal server error
+    delete:
+      summary: Deletes wallet by user identifier
+      tags: [ "Wallet" ]
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Wallet successfully deleted
+        '400':
+          description: Wrong input parameters
+        '404':
+          description: Wallet doesn't exist
+        '500':
+          description: Internal server error
+    post:
+      summary: Creates mew wallet
+      tags: [ "Wallet" ]
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '201':
+          description: Wallet created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletDTO'
+        '400':
+          description: Wrong input parameters
+        '409':
+          description: Wallet for specified user id already exists
+        '500':
+          description: Internal server error
+  /api/v1/wallet/_search:
+    post:
+      summary: Searches wallets by filter
+      tags: [ "Wallet" ]
+      requestBody:
+        $ref: '#/components/requestBodies/WalletFilter'
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WalletDTO'
+        '204':
+          description: Wallets not found
+        '400':
+          description: Wrong input parameters
+        '500':
+          description: Internal server error
+
+
+
+components:
+  parameters:
+    UserId:
+      in: path
+      name: userId
+      schema:
+        type: integer
+        format: int64
+      required: true
+      description: User id
+  requestBodies:
+    WalletFilter:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WalletFilter'
+  schemas:
+    WalletDTO:
+      title: WalletDTO
+      description: Wallet data transfer object
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identifier
+        userId:
+          type: integer
+          format: int64
+          description: User's identifier
+        balance:
+          type: number
+    BalanceResponse:
+      title: BalanceResponse
+      description: Balance response
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+          description: user's identifier
+        balance:
+          type: number
+    WalletFilter:
+      description: Filter for searching wallets
+      title: WalletFilter
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+          description: user's identifier
+        minBalance:
+          type: number
+          description: Minimum balance
+        maxBalance:
+          type: number
+          description: Maximum balance

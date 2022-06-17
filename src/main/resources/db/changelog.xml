@@ -6,4 +6,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd"
         logicalFilePath="db/changelog.xml">
+    <changeSet id="1" author="sugrobov.al">
+        <sqlFile path="changelog/001_create_and_populate_wallets_table.sql" relativeToChangelogFile="true"/>
+    </changeSet>
 </databaseChangeLog>
