@@ -40,14 +40,14 @@ public class WalletController implements WalletApi {
     @Override
     public ResponseEntity<WalletDTO> apiV1WalletUserIdGet(Long userId) {
         Wallet wallet = this.walletService.get(userId);
-        WalletDTO walletResponse = this.walletMapper.walletToWalletResponse(wallet);
+        WalletDTO walletResponse = this.walletMapper.walletToWalletDTO(wallet);
         return ResponseEntity.ok(walletResponse);
     }
 
     @Override
     public ResponseEntity<WalletDTO> apiV1WalletUserIdPost(Long userId) {
         Wallet wallet = this.walletService.create(userId);
-        WalletDTO walletResponse = this.walletMapper.walletToWalletResponse(wallet);
+        WalletDTO walletResponse = this.walletMapper.walletToWalletDTO(wallet);
         return ResponseEntity.status(HttpStatus.CREATED).body(walletResponse);
     }
 

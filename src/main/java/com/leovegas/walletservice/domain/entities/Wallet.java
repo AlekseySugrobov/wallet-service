@@ -19,8 +19,14 @@ import java.math.BigDecimal;
 @ToString
 @Table(name = "wallets")
 public class Wallet extends BaseEntity {
+    /**
+     * User's identifier.
+     */
     @Column(name = "user_id", nullable = false, unique = true)
     private Long userId;
+    /**
+     * Balance.
+     */
     @NotNull
     private BigDecimal balance = BigDecimal.ZERO;
 }
