@@ -27,6 +27,7 @@ public interface TransactionMapper {
     @Mapping(source = "type", target = "type")
     @Mapping(source = "status", target = "status")
     @Mapping(source = "amount", target = "amount")
+    @Mapping(source = "comment", target = "comment")
     @Mapping(source = "created", target = "startDate", qualifiedByName = "localDateTimeToOffsetDateTime")
     @Mapping(source = "updated", target = "endDate", qualifiedByName = "localDateTimeToOffsetDateTime")
     TransactionDto transactionToTransactionDto(Transaction transaction);

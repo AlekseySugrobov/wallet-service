@@ -88,7 +88,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = InsufficientFundsException.class)
+    @Transactional(isolation = Isolation.SERIALIZABLE, noRollbackFor = InsufficientFundsException.class)
     public void proceedTransaction(Wallet wallet, BigDecimal amount, TransactionType type) {
         if (type.equals(TransactionType.DEBIT)) {
             wallet.setBalance(wallet.getBalance().add(amount));

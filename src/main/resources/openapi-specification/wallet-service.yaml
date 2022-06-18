@@ -264,3 +264,6 @@ components:
         status:
           type: transactionStatus
           description: Transaction status
+        comment:
+          type: string
+          description: Comment
