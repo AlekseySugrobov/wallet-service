@@ -99,7 +99,50 @@ paths:
           description: Wrong input parameters
         '500':
           description: Internal server error
-
+  /api/v1/transaction:
+    post:
+      summary: Creates transaction
+      tags: [ "Transaction" ]
+      requestBody:
+        $ref: '#/components/schemas/RegisterTransactionRequest'
+      responses:
+        '201':
+          description: Transaction created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionDto'
+        '400':
+          description: Wrong input parameters
+        '404':
+          description: Wallet not found
+        '409':
+          description: Transaction id already exists
+        '500':
+          description: Internal server error
+  /api/v1/transaction/{userId}:
+    get:
+      summary: Gets transactions by user id
+      tags: [ "Transaction" ]
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Got transactions by user id
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionDto'
+        '204':
+          description: Not found transactions by user id
+        '400':
+          description: Wrong input parameters
+        '404':
+          description: Not existing user id
+        '500':
+          description: Internal server error
 
 
 components:
@@ -118,6 +161,11 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/WalletFilter'
+    RegisterTransactionRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RegisterTransactionRequest'
   schemas:
     WalletDTO:
       title: WalletDTO
@@ -160,3 +208,62 @@ components:
         maxBalance:
           type: number
           description: Maximum balance
+    RegisterTransactionRequest:
+      title: RegisterTransactionRequest
+      description: Request for registering transaction
+      type: object
+      required:
+        - userId
+        - transactionId
+        - type
+        - amount
+      properties:
+        userId:
+          type: integer
+          format: int64
+          description: user's identifier
+        transactionId:
+          type: string
+          description: transaction's identifier
+          nullable: false
+        type:
+          type: transactionType
+          description: transaction's type
+          nullable: false
+        amount:
+          type: number
+          description: transaction amount
+          nullable: false
+          minimum: 1
+    TransactionDto:
+      description: Transaction info
+      title: TransactionDTO
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+          description: user's identifier
+        transactionId:
+          type: string
+          description: Unique transaction id
+        type:
+          type: transactionType
+          description: Transation type
+        amount:
+          type: number
+          description: Transaction amount
+        startDate:
+          type: string
+          format: date-time
+          description: Transaction start datetime
+        endDate:
+          type: string
+          format: date-time
+          description: Transaction end datetime
+        status:
+          type: transactionStatus
+          description: Transaction status
+        comment:
+          type: string
+          description: Comment

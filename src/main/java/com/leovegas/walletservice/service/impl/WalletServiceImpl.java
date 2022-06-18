@@ -3,7 +3,9 @@ package com.leovegas.walletservice.service.impl;
 import com.google.common.collect.Lists;
 import com.leovegas.model.WalletFilter;
 import com.leovegas.walletservice.domain.entities.QWallet;
+import com.leovegas.walletservice.domain.entities.TransactionType;
 import com.leovegas.walletservice.domain.entities.Wallet;
+import com.leovegas.walletservice.exceptions.InsufficientFundsException;
 import com.leovegas.walletservice.exceptions.WalletNotFoundException;
 import com.leovegas.walletservice.exceptions.WalletUniqueConstraintViolationException;
 import com.leovegas.walletservice.repositories.WalletRepository;
@@ -11,6 +13,7 @@ import com.leovegas.walletservice.service.WalletService;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -82,5 +85,19 @@ public class WalletServiceImpl implements WalletService {
                 .from(QWallet.wallet)
                 .where(QWallet.wallet.userId.eq(userId))
                 .fetchOne();
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE, noRollbackFor = InsufficientFundsException.class)
+    public void proceedTransaction(Wallet wallet, BigDecimal amount, TransactionType type) {
+        if (type.equals(TransactionType.DEBIT)) {
+            wallet.setBalance(wallet.getBalance().add(amount));
+        } else {
+            if (wallet.getBalance().compareTo(amount) < 0) {
+                throw new InsufficientFundsException(wallet.getUserId(), amount);
+            }
+            wallet.setBalance(wallet.getBalance().subtract(amount));
+        }
+        this.walletRepository.save(wallet);
     }
 }
