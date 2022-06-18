@@ -112,10 +112,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransactionDto'
-        '404':
-          description: Wallet not found
         '400':
           description: Wrong input parameters
+        '404':
+          description: Wallet not found
         '409':
           description: Transaction id already exists
         '500':
@@ -212,12 +212,16 @@ components:
       title: RegisterTransactionRequest
       description: Request for registering transaction
       type: object
+      required:
+        - userId
+        - transactionId
+        - type
+        - amount
       properties:
         userId:
           type: integer
           format: int64
           description: user's identifier
-          nullable: false
         transactionId:
           type: string
           description: transaction's identifier

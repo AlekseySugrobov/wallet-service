@@ -9,4 +9,7 @@
     <changeSet id="1" author="sugrobov.al">
         <sqlFile path="changelog/001_create_and_populate_wallets_table.sql" relativeToChangelogFile="true"/>
     </changeSet>
+    <changeSet id="2" author="sugrobov.al">
+        <sqlFile path="changelog/002_create_and_populate_transactions_table.sql" relativeToChangelogFile="true"/>
+    </changeSet>
 </databaseChangeLog>
